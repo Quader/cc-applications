@@ -86,7 +86,7 @@ local isValid = 0
 while true do
   local timeString = textutils.formatTime(os.time(),false)
 
-  local response = rednet.receive()
+  local senderId, response = rednet.receive()
   local responseTable = json.decode(response)
 
   isValid = checkPasswordForLock(responseTable["password"], repsonseTable["player"])
