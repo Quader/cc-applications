@@ -30,16 +30,32 @@ function setPasswordForLock(id,password)
    return true
 end
 
-function checkPasswordForLock(id, password, player)
-   local i = findIndexForId(id)
-   if i == 0 then 
-      return -1
-   end
-   if passwordForDoor[i] == password then
-      return 1
-   else
-      return 0
-   end
+function checkPasswordForLock(password, player)
+  local i = findIndexForId(id)
+  file = fs.open("playerDB.txt", "r")
+  fileStr = file.readAll()
+   
+  file.close()
+  jsonObj = json.decode(fileStr)
+
+  for key, value in pairs(jsonObj) do
+    if key == "player" then
+      local playerObj = value
+      for key,value in pairs(playerObj) do
+        if tostring(value) == tostring()
+        --print(tostring(key).." - "..textutils.serialize(value))
+      end
+    end
+  end
+
+  if i == 0 then 
+    return -1
+  end
+  if passwordForDoor[i] == password then
+    return 1
+  else
+    return 0
+  end
 end
 
 function saveData()
@@ -72,7 +88,7 @@ while true do
 
    senderId, message, distance = rednet.receive()
      
-   isValid = checkPasswordForLock(senderId, message, player)
+   isValid = checkPasswordForLock(message, player)
 
    if isValid == -1 then
       print("server "..senderId.." sent us a request but is not in our list")
