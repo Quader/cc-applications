@@ -50,7 +50,9 @@ function getPassword(player)
   term.setCursorPos(5,1)
   while pwSet == true do
     local password = term.read()
-
+    if password.len > 0 then
+      authWithServer(player, password)
+    end
   end
 end
 

@@ -81,7 +81,6 @@ function retrieveData()
   myfile:close()
 end
 
-
 local isValid = 0
 
 while true do
