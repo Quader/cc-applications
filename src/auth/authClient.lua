@@ -19,8 +19,8 @@ function checkPlayerEvent(e)
     return 0
   end
 end
-
-while true do
+local waiting = true
+while waiting == true do
   print("Waiting for player..")
   a, b = os.pullEvent(player)
   
@@ -30,6 +30,7 @@ while true do
     playerDetected(b)
     sleep(2)
     getPassword(b)
+    waiting = false
   end
 end
 
