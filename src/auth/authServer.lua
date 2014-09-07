@@ -1,11 +1,10 @@
 local myid = os.computerID()
 local doorList = { 11,13 }
 local passwordForDoor = { "notch","minecraft" }
-
 mon=peripheral.wrap("top")
 print("Access Terminal")
 rednet.open("left")
-
+os.loadAPI("json")
 
 print("Computer id for Access Terminal is "..tostring(myid))
 
@@ -31,7 +30,6 @@ function setPasswordForLock(id,password)
 end
 
 function checkPasswordForLock(password, player)
-  local i = findIndexForId(id)
   file = fs.open("playerDB.txt", "r")
   fileStr = file.readAll()
    
@@ -42,8 +40,11 @@ function checkPasswordForLock(password, player)
     if key == "player" then
       local playerObj = value
       for key,value in pairs(playerObj) do
-        if tostring(value) == tostring()
-        --print(tostring(key).." - "..textutils.serialize(value))
+        if key["name"] == player and key["password"] then
+          return 1
+        else
+          return 0
+        end 
       end
     end
   end
@@ -84,23 +85,24 @@ end
 local isValid = 0
 
 while true do
-   local timeString = textutils.formatTime(os.time(),false)
+  local timeString = textutils.formatTime(os.time(),false)
 
-   senderId, message, distance = rednet.receive()
-     
-   isValid = checkPasswordForLock(message, player)
+  local response = rednet.receive()
+  local responseTable = json.decode(response)
 
-   if isValid == -1 then
-      print("server "..senderId.." sent us a request but is not in our list")
-   elseif isValid == 1 then
-      rednet.send(senderId, "Valid")
-      mon.scroll(1)
-      mon.setCursorPos(1,4)
-      mon.write("Access from "..senderId.." at "..timeString)
-   else
-      rednet.send(senderId, "Not Valid")
-      mon.scroll(1)
-      mon.setCursorPos(1,4)
-      mon.write("Failure from "..senderId.." at "..timeString)
+  isValid = checkPasswordForLock(responseTable["password"], repsonseTable["player"])
+
+  if isValid == -1 then
+    print("server "..senderId.." sent us a request but is not in our list")
+  elseif isValid == 1 then
+    rednet.send(senderId, "Valid")
+    mon.scroll(1)
+    mon.setCursorPos(1,4)
+    mon.write("Access from "..senderId.." at "..timeString)
+  else
+    rednet.send(senderId, "Not Valid")
+    mon.scroll(1)
+    mon.setCursorPos(1,4)
+    mon.write("Failure from "..senderId.." at "..timeString)
   end
 end
