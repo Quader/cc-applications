@@ -22,7 +22,8 @@ function force ( _sType )
 
 	if #tResults == 0 then
 		term.clear()
-		print( "Es wurde kein ".. tostring( _sType ) .. " gefunden!" )
+		term.setCursorPos( 1, 1 )
+		print( "Es wurde kein Peripheral vom Typ ".. tostring( _sType ) .. " gefunden!" )
 		return nil
 	elseif #tResults == 1 then
 		return peripheral.wrap( tResults[1] )
@@ -30,7 +31,8 @@ function force ( _sType )
 		repeat
 			local bool = false
 			term.clear()
-			print( "Es wurden mehrere " .. tostring( _sType ) .. " gefunden!" )
+			term.setCursorPos( 1, 1 )
+			print( "Es wurden mehrere Peripherals gefunden!" )
 			for i, sSide in pairs( tResults ) do
 				local x, y = term.getCursorPos()
 				term.setCursorPos( 1, y + 1 )
