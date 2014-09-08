@@ -1,6 +1,7 @@
-rednet.open("top")
+modem = peripherals.get("modem")
+rednet.open(modem)
+
 os.pullEvent = os.pullEventRaw
-os.loadAPI("json")
 local serverID = 1087
 
 function playerDetected(player)
