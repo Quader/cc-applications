@@ -46,7 +46,8 @@ end
 
 if(cmd == 'get') then
 	write('Connecting to gist.github.com...')
-	local response = http.get(id)
+	id = string.sub(id, -20)
+	local response = http.get("https://api.github.com/gists/" .. id)
 
 	if(response) then
 		print('Success!')
@@ -61,7 +62,7 @@ if(cmd == 'get') then
 			local path = shell.resolve(arg)
 
 			if(fs.exists(path)) then
-				print('File "', name, '" already exists, skipping...')
+				print('File "', arg, '" already exists, skipping...')
 			else
 				local file = fs.open(path, 'w')
 				file.write(data.content)
