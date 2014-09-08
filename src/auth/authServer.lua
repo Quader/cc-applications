@@ -42,10 +42,9 @@ function checkPasswordForLock(password, player)
       for key,value in pairs(playerObj) do
         if value["name"] == player and value["password"] == password then
           return 1
-        else
-          return 0
         end 
       end
+      return 0
     end
   end
 
