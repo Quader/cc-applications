@@ -31,13 +31,13 @@ function force ( _sType )
 			local bool = false
 			term.clear()
 			print( "Es wurden mehrere " .. tostring( _sType ) .. " gefunden!" )
-			for i, sSide in pairs( p ) do
+			for i, sSide in pairs( tResults ) do
 				local x, y = term.getCursorPos()
 				term.setCursorPos( 1, y + 1 )
 				term.write("F" .. tostring( i ) .. ": " .. tostring( sSide ))
 			end
 			local event, keycode = os.pullEvent( "key" )
-			for i, side in pairs( p ) do
+			for i, sSide in pairs( tResults ) do
 				if keycode == ( 58 + i ) then
 					bool = true
 					term.clear()
