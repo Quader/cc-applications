@@ -26,6 +26,7 @@ function authWithServer(player, password)
   table["password"] = password
   local payload = json.encode(table)
   rednet.send(serverID, payload)
+  waitForAuthResponse()
 end
 
 function waitForAuthResponse()
@@ -34,9 +35,19 @@ function waitForAuthResponse()
     local senderID, response = rednet.receive()
     if string.len(response) > 0 and senderID == serverID then
       if response == "Valid" then
+        term.clear()
+        term.setCursorPos(1,6)
         print("Success!")
+        sleep(2)
+        waitForStart()
+        authenticated = true
       else
+        term.clear()
+        term.setCursorPos(1,6)
         print("AccessDenied you son of a sneaky bitch!")
+        sleep(2)
+        waitForStart()
+        authenticated = true
       end
     end
   end
@@ -46,33 +57,35 @@ function getPassword(player)
   pwSet = false
   term.clear()
   term.setCursorPos(1,1)
-  print("Hello, "..player.."! /n")
-  print("Please enter your Password")
+  print("Hello, "..player.."!")
+  print("Please enter your Password!")
   term.setCursorPos(1,5)
+  print("Password: ")
   while pwSet == false do
     password = read("*")
     if string.len(password) > 0 then
       authWithServer(player, password)
-
       pwSet = true
     end
   end
 end
 
-local waiting = true
-while waiting == true do
-  print("Waiting for player..")
-  a, b = os.pullEvent(player)
-  
-  local isPlayerEvent = checkPlayerEvent(a)
+function waitForStart()
+  local waiting = true
+  while waiting == true do
+    term.clear()
+    print("Waiting for player..")
+    a, b = os.pullEvent(player)
+    
+    local isPlayerEvent = checkPlayerEvent(a)
 
-  if isPlayerEvent == 1 then
-    playerDetected(b)
-    sleep(2)
-    getPassword(b)
-    waiting = false
+    if isPlayerEvent == 1 then
+      playerDetected(b)
+      sleep(2)
+      getPassword(b)
+      waiting = false
+    end
   end
 end
 
-
-
+waitForStart()
