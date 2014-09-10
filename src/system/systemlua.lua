@@ -1,13 +1,21 @@
 local iPageHandler_Active_page = 1
 local tPageHandler_Functions = {}
+local tLog_data = {}
+local iLog_scroll = 1
+local bEventManager = true
+local tEventManager_Functions = {}
+
+local break = true
+
 --
 iH - Höhe Monitor
+iW - Weite Monitor
 
-
-
+--[[
 function execfunc( _sName )
 	_sName()
 end
+]]--
 
 function system:addPage( _iId, _sName, _tFunctions )
 	if type( _iId ) ~=  "number" or type( _sName ) ~= "string" or type( _tFunctions ) ~= "table" then
@@ -51,7 +59,6 @@ function system:removePage( ... )
 end
 
 local function system:pageHandler()
-
 	local iXcounter = 1
 	for i, tPage in ipairs( tPageHandler_Functions ) do
 		for iI = 1, string.len( tPage.name ) do
@@ -62,6 +69,50 @@ local function system:pageHandler()
 	end
 
 	for i, tFunc in pairs( tPageHandler_Functions[iPageHandler_Active_page].functions ) do
-		execfunc( tFunc )
+		TFunc()
+	end
+end
+
+function system:Log:draw()
+	monitor.setCursorPos( 1, 1 )
+	for iI = iLog_scroll, iLog_scroll + iH - 1 do
+		monitor.setTextColor( tLog_data[iI].color )
+		monitor.write( tLog_data[iI].text )
+		local x, y = monitor.getCusorPos()
+		monitor.setCursorPos( 1, y + 1 )
+	end
+end
+
+function system:Log:add( _cFontcolor, _sText )
+	if type( _cFontcolor ) ~= "number" or type( _sText ) ~= "string" then
+		--Error ausgeben
+		term.clear()
+		term.setCursorPos( 1, 1 )
+		print( "Type error! Expected number, string got " .. tostring(type( _cFontcolor )) ", " .. tostring(type( _sText )))
+		return
+	else
+		table.insert( tLog_data, {["color"] = _cFontcolor, ["text"] = _sText})
+	end
+end
+
+
+function system:eventManager()
+	while true do 
+	local args = { os.pullEventRaw() }
+
+	for iI, fFunctions in pairs( tEventManager_Functions ) do
+		fFunctions( args )
+	end
+end
+
+function system:eventManager:add( _sFunction )
+	if type( _sFunciton ) ~= "string" then
+		--Error ausgeben
+		term.clear()
+		term.setCursorPos( 1, 1 )
+		print( "Type error! Expected string got " .. tostring( type( _sFunction )))
+		return
+	else
+		table.insert( tEventManager_Functions, _sFunction )
 	end
 end
