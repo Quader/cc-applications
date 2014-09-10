@@ -5,8 +5,6 @@ local iLog_scroll = 1
 local bEventManager = true
 local tEventManager_Functions = {}
 
-local break = true
-
 --
 iH - Höhe Monitor
 iW - Weite Monitor
@@ -97,11 +95,13 @@ end
 
 
 function system:eventManager()
-	while true do 
-	local args = { os.pullEventRaw() }
+	bEventManager = true
+	while bEventManager do 
+		local args = { os.pullEventRaw() }
 
-	for iI, fFunctions in pairs( tEventManager_Functions ) do
-		fFunctions( args )
+		for iI, fFunctions in pairs( tEventManager_Functions ) do
+			fFunctions( args )
+		end
 	end
 end
 
@@ -132,4 +132,8 @@ function system:eventManager:remove( _sFunction )
 			end
 		end
 	end
+end
+
+function system:eventManager:break()
+	bEventManager = false
 end
