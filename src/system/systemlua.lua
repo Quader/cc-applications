@@ -5,31 +5,32 @@ local iLog_scroll = 1
 local bEventManager = true
 local tEventManager_Functions = {}
 
---
-iH - Höhe Monitor
-iW - Weite Monitor
+local monitor = peripherals.force("monitor")
+local iW, iH = monitor.getSize()
 
---[[
-function execfunc( _sName )
-	_sName()
-end
-]]--
+Page = {}
+Page.__index = Page
 
-function system:addPage( _iId, _sName, _tFunctions )
-	if type( _iId ) ~=  "number" or type( _sName ) ~= "string" or type( _tFunctions ) ~= "table" then
-		--Error ausgeben!
+function Page:add( _iId, _sName, _tFunctions )
+	if type( _iId ) ~= "number" or type( _sName ) ~= "string" or ( type( _tFunctions ) ~= "table" and type ( _tFuncitons ) ~= "nil" ) then
+		--TODO Error ausgeben!
 		term.clear()
 		term.setCursorPos( 1, 1 )
-		print( "Type error! Expected number, string, table got " .. tostring( type( _iId )) .. " , " ..  tostring( type( _sName )) .. " , " .. tostring( type( _tFunctions )))
+		print(_iId .. " - " .. _sName .. " - " .. tostring(_tFunctions))
+		print( "Type error! Expected number, string, table/nil got " .. tostring( type( _iId )) .. " , " ..  tostring( type( _sName )) .. " , " .. tostring( type( _tFunctions )))
 		return
 	else
 		tPageHandler_Functions[_iId] = {}
 		tPageHandler_Functions[_iId].name = _sName
-		tPageHandler_Functions[_iId].functions = _tFunctions
+		if type( _tFunctions ) == nil then
+			tPageHandler_Functions[_iId].functions = nil
+		else
+			tPageHandler_Functions[_iId].functions = _tFunctions
+		end
 	end
 end
 
-function system:removePage( ... )
+function Page:remove( ... )
 	if #... ~= 1 then
 		--Error ausgeben!
 		term.clear()
@@ -56,22 +57,32 @@ function system:removePage( ... )
 	end
 end
 
-local function system:pageHandler()
+function Page:Handler()
+	for iI = 1, iW do
+		monitor.setCursorPos(iI, iH)
+		monitor.write(" ")
+	end
+
 	local iXcounter = 1
 	for i, tPage in ipairs( tPageHandler_Functions ) do
 		for iI = 1, string.len( tPage.name ) do
 			monitor.setCursorPos( iXcounter + iI, iH )
-			monitor.write(string.sub( tPage, iI, iI ))
+			monitor.write(string.sub( tPage.name, iI, iI ))
 		end
 		iXcounter = iXcounter + string.len( tPage.name ) + 1
 	end
 
-	for i, tFunc in pairs( tPageHandler_Functions[iPageHandler_Active_page].functions ) do
-		TFunc()
+	if type( tPageHandler_Functions[iPageHandler_Active_page].functions ) ~= "nil"  then
+		for i, tFunc in pairs( tPageHandler_Functions[iPageHandler_Active_page].functions ) do
+			TFunc()
+		end
 	end
 end
 
-function system:Log:draw()
+Log = {}
+Log.__index = Log
+
+function Log:draw()
 	monitor.setCursorPos( 1, 1 )
 	for iI = iLog_scroll, iLog_scroll + iH - 1 do
 		monitor.setTextColor( tLog_data[iI].color )
@@ -81,20 +92,22 @@ function system:Log:draw()
 	end
 end
 
-function system:Log:add( _cFontcolor, _sText )
+function Log:add( _cFontcolor, _sText )
 	if type( _cFontcolor ) ~= "number" or type( _sText ) ~= "string" then
 		--Error ausgeben
 		term.clear()
 		term.setCursorPos( 1, 1 )
-		print( "Type error! Expected number, string got " .. tostring(type( _cFontcolor )) ", " .. tostring(type( _sText )))
+		term.write( "Type error! Expected number, string got " ..  type( _cFontcolor ) ", " .. type( _sText ))
 		return
 	else
 		table.insert( tLog_data, {["color"] = _cFontcolor, ["text"] = _sText})
 	end
 end
 
+eventManager = {}
+eventManager.__index = eventManager
 
-function system:eventManager()
+function eventManager:start()
 	bEventManager = true
 	while bEventManager do 
 		local args = { os.pullEventRaw() }
@@ -105,7 +118,7 @@ function system:eventManager()
 	end
 end
 
-function system:eventManager:add( _sFunction )
+function eventManager:add( _sFunction )
 	if type( _sFunciton ) ~= "string" then
 		--Error ausgeben
 		term.clear()
@@ -117,7 +130,7 @@ function system:eventManager:add( _sFunction )
 	end
 end
 
-function system:eventManager:remove( _sFunction )
+function eventManager:remove( _sFunction )
 	if type( _sFunciton ) ~= "string" then
 		--Error ausgeben
 		term.clear()
@@ -134,6 +147,6 @@ function system:eventManager:remove( _sFunction )
 	end
 end
 
-function system:eventManager:break()
+function eventManager:hold()
 	bEventManager = false
 end
