@@ -116,3 +116,20 @@ function system:eventManager:add( _sFunction )
 		table.insert( tEventManager_Functions, _sFunction )
 	end
 end
+
+function system:eventManager:remove( _sFunction )
+	if type( _sFunciton ) ~= "string" then
+		--Error ausgeben
+		term.clear()
+		term.setCursorPos( 1, 1 )
+		print( "Type error! Expected string got " .. tostring( type( _sFunction )))
+		return
+	else
+		for iI, sName in pairs( tEventManager_Functions ) do
+			if sName == _sFunction then
+				table.remove( tEventManager_Functions, iI)
+				next = next - 1
+			end
+		end
+	end
+end
